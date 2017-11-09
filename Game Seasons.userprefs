@@ -1,0 +1,12 @@
+﻿<Properties StartupItem="Game Seasons.Editor.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\2DPlatformerPro\Scripts\Animation\Bridges\MecanimAnimationBridge_2D.cs">
+    <Files>
+      <File FileName="Assets\2DPlatformerPro\Scripts\Animation\Bridges\MecanimAnimationBridge_2D.cs" Line="174" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
