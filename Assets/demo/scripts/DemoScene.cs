@@ -14,6 +14,9 @@ public class DemoScene : MonoBehaviour
 	public float jumpHeight = 3f;
     public float runMultiplier = 0.5f;
 
+    public float rollingSpeed = 100f;
+    public float rollingTime = 1f;
+
 	[HideInInspector]
 	private float normalizedHorizontalSpeed = 0;
 
@@ -23,6 +26,11 @@ public class DemoScene : MonoBehaviour
 	private Vector3 _velocity;
     private bool ledge;
     private Vector2 edgePos;
+    private BoxCollider2D _boxCol;
+
+    private float rollingTimer;
+    private bool rolling;
+    private int rollingSide;
 
     private Transform grabGO;
     private bool crawling;
@@ -31,9 +39,10 @@ public class DemoScene : MonoBehaviour
 	{
 		_animator = GetComponent<Animator>();
 		_controller = GetComponent<CharacterController2D>();
+        _boxCol = GetComponent<BoxCollider2D>();
 
-		// listen to some events for illustration purposes
-		_controller.onControllerCollidedEvent += onControllerCollider;
+        // listen to some events for illustration purposes
+        _controller.onControllerCollidedEvent += onControllerCollider;
 		_controller.onTriggerEnterEvent += onTriggerEnterEvent;
 		_controller.onTriggerExitEvent += onTriggerExitEvent;
 	}
@@ -90,22 +99,45 @@ public class DemoScene : MonoBehaviour
 		if( _controller.isGrounded )
 			_velocity.y = 0;
 
-        if(Input.GetAxis("Vertical")<=0)
+        if (rolling)
+        {
+            _controller.move(rollingSide * Vector2.right * rollingSpeed * Time.deltaTime);
+
+            rollingTimer += Time.deltaTime;
+            if (rollingTimer > rollingTime)
+            {
+                rollingTimer = 0f;
+                rolling = false;
+            }
+            return;
+        }
+
+        if (Input.GetAxis("Vertical")<=0)
             _controller.lookingUp = false;
 
         if (crawling)
         {
-            GetComponent<BoxCollider2D>().size = new Vector2(0.3f, 0.2f);
-            GetComponent<BoxCollider2D>().offset = new Vector2(0f, -0.22f);
+            _boxCol.size = new Vector2(0.3f, 0.2f);
+            _boxCol.offset = new Vector2(0f, -0.22f);
             _controller.recalculateDistanceBetweenRays();
             if (Input.GetKeyUp(KeyCode.LeftControl))
             {
                 crawling = false;
-                GetComponent<BoxCollider2D>().size = new Vector2(0.3f, 0.65f);
-                GetComponent<BoxCollider2D>().offset = new Vector2(0f, 0f);
+                _boxCol.size = new Vector2(0.3f, 0.65f);
+                _boxCol.offset = new Vector2(0f, 0f);
                 _controller.recalculateDistanceBetweenRays();
             }
-        }
+
+            if (_controller.isGrounded && Input.GetKey(KeyCode.LeftShift) && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow)))
+            {
+                //Rolar
+                if(!rolling)
+                    rolling = true;
+                if (Input.GetKey(KeyCode.RightArrow))
+                    rollingSide = 1;
+                else rollingSide = -1;
+            }
+        }        
 
         if (ledge)
         {
