@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\CharacterController2D\CharacterController2D.cs" />
+    <Compile Include="Assets\demo\scripts\DebugPanel.cs" />
     <Compile Include="Assets\demo\scripts\DemoScene.cs" />
     <Compile Include="Assets\demo\scripts\SmoothFollow.cs" />
   </ItemGroup>

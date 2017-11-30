@@ -35,6 +35,8 @@ public class DemoScene : MonoBehaviour
     private Transform grabGO;
     private bool crawling;
 
+    private float swimming = 1f;
+
     void Awake()
 	{
 		_animator = GetComponent<Animator>();
@@ -81,13 +83,17 @@ public class DemoScene : MonoBehaviour
 
     void onTriggerEnterEvent( Collider2D col )
 	{
-		Debug.Log( "onTriggerEnterEvent: " + col.gameObject.name );
+        swimming = 0.1f;
+
+        Debug.Log( "onTriggerEnterEvent: " + col.gameObject.name );
 	}
 
 
 	void onTriggerExitEvent( Collider2D col )
 	{
-		Debug.Log( "onTriggerExitEvent: " + col.gameObject.name );
+        swimming = 1f;
+
+        Debug.Log( "onTriggerExitEvent: " + col.gameObject.name );
 	}
 
 	#endregion
@@ -146,7 +152,7 @@ public class DemoScene : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                _velocity.y = Mathf.Sqrt(2f * jumpHeight * -gravity);
+                _velocity.y = Mathf.Sqrt(2f * jumpHeight * -gravity * swimming);
                 _animator.Play(Animator.StringToHash("Jump"));
                 ledge = false;
             }
@@ -251,9 +257,9 @@ public class DemoScene : MonoBehaviour
 
 
 		// we can only jump whilst grounded
-		if( _controller.isGrounded && Input.GetKeyDown( KeyCode.Space ) && Input.GetAxis("Vertical")>=0 )
+		if( (_controller.isGrounded || swimming < 0.9f) && Input.GetKeyDown( KeyCode.Space ) && Input.GetAxis("Vertical")>=0 )
 		{
-			_velocity.y = Mathf.Sqrt( 2f * jumpHeight * -gravity );
+			_velocity.y = Mathf.Sqrt( 2f * jumpHeight * -gravity * swimming);
 			_animator.Play( Animator.StringToHash( "Jump" ) );
 		}
 
@@ -263,7 +269,7 @@ public class DemoScene : MonoBehaviour
 		_velocity.x = Mathf.Lerp( _velocity.x, normalizedHorizontalSpeed * runSpeed, Time.deltaTime * smoothedMovementFactor );
 
 		// apply gravity before moving
-		_velocity.y += gravity * Time.deltaTime;
+		_velocity.y += gravity * swimming * Time.deltaTime;
 
 		// if holding down bump up our movement amount and turn off one way platform detection for a frame.
 		// this lets us jump down through one way platforms
